@@ -359,6 +359,7 @@ fi
 
   cat > /etc/supervisor/conf.d/damon.conf << EOF
 [supervisord]
+user=root
 nodaemon=true
 logfile=/dev/null
 pidfile=/run/supervisord.pid
