@@ -367,28 +367,28 @@ nodaemon=true
 logfile=/dev/null
 pidfile=/run/supervisord.pid
 
-[program:grpcproxy]
+[program:caddy]
 command=$GRPC_PROXY_RUN
 autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:nezha]
+[program:nez_ser]
 command=$WORK_DIR/app
 autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:agent]
+[program:nez_agent]
 command=$AG_RUN
 autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:argo]
+[program:cf_arg]
 command=$WORK_DIR/$ARGO_RUN
 autostart=true
 autorestart=true
@@ -399,7 +399,7 @@ EOF
 if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
     cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
-[program:webapp]
+[program:web_app]
 command=$WEB_RUN
 autostart=true
 autorestart=true
