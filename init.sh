@@ -183,10 +183,6 @@ else
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
-cover: 1
-https: {}
-user_template: user-dist
-admin_template: admin-dist
 listen_port: $GRPC_PORT
 language: zh-CN
 site_name: "Nezha Probe"
@@ -356,7 +352,7 @@ if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
    AG_RUN="$WORK_DIR/nezha-agent -s localhost:$GRPC_PORT -p $LOCAL_TOKEN"
   fi
 else
-    AG_RUN="$WORK_DIR/nezha-agent -c $WORK_DIR/data/config.yml"
+    AG_RUN="$WORK_DIR/nezha-agent -c $WORK_DIR/data/config.yml --disable-auto-update --disable-force-update"
 fi
   # 生成 supervisor 进程守护配置文件
 
