@@ -1,4 +1,4 @@
-## Docker-for-Nezha-Argo-server-v1.x
+## Docker-for-Nezha-Argo-server-v1.x，兼容v0，但是备份不支持互相迁移
 
 #### 节点与哪吒融于一体，即可当哪吒面板，也可当节点使用
 
@@ -29,7 +29,7 @@ daxia2023/nezser:latest
 
 注意哪吒v1绑定GitHub与v0不同
 
-| OAuth 2.0 | v0为 `https://你的面板域名/oauth2/callback`，v1为 `https://你的面板域名/api/v1/oauth2/callback` |
+v0为 `https://你的面板域名/oauth2/callback`，v1为 `https://你的面板域名/api/v1/oauth2/callback` |
 
 # 附上F大哪吒面板原始教程:
 
