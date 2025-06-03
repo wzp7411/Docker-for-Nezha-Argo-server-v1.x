@@ -231,7 +231,9 @@ fi
  fi
  [ -z "$NO_SUIJI" ] && LOCAL_TOKEN=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 18)
  [ -n "$NO_SUIJI" ] && LOCAL_TOKEN="$NO_SUIJI"
- sqlite3 ${WORK_DIR}/data/sqlite.db "update servers set secret='${LOCAL_TOKEN}' where created_at='2023-04-23 13:02:00.770756566+08:00'"
+ LOCAL_DATE=$(sqlite3 ${WORK_DIR}/data/sqlite.db "SELECT created_at FROM servers WHERE name LIKE '%local%' COLLATE NOCASE LIMIT 1;") 
+ [ -z "$LOCAL_DATE" ] && LOCAL_DATE='2023-04-23 13:02:00.770756566+08:00'
+ sqlite3 ${WORK_DIR}/data/sqlite.db "update servers set secret='${LOCAL_TOKEN}' where created_at='${LOCAL_DATE}'"
  fi
   # SSH path 与 GH_CLIENTSECRET 一样
   echo root:"$GH_CLIENTSECRET" | chpasswd root
