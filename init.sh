@@ -183,15 +183,16 @@ else
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
+cover: 1
+https: {}
+user_template: user-dist
+admin_template: admin-dist
 listen_port: $GRPC_PORT
 language: zh-CN
 site_name: "Nezha Probe"
 install_host: $ARGO_DOMAIN:$GRPC_PROXY_PORT
 location: Asia/Shanghai
 tls: true
-EOF
-    if [[ -n "$GH_CLIENTID" && -n "$GH_CLIENTSECRET" ]]; then
-      cat >> ${WORK_DIR}/data/config.yaml << EOF
 oauth2:
    GitHub:
      client_id: "$GH_CLIENTID"
@@ -202,7 +203,7 @@ oauth2:
      user_info_url: "https://api.github.com/user"
      user_id_path: "id"
 EOF
-    fi
+
     cat > ${WORK_DIR}/data/config.yml << EOF
 client_secret: $DASH_TOKEN
 debug: false
