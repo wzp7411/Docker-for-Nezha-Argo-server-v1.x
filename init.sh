@@ -178,8 +178,8 @@ else
 
   token_hash=$(echo -n "TOKEN_${seed}" | sha256sum | cut -d' ' -f1)
   DASH_TOKEN1=$(echo -n "$token_hash" | tr 'abcdef' 'ABCDEF' | head -c 32)
-  AGENT_UUID=${AGENT_UUID:-'$AGENT_UUID1'}
-  DASH_TOKEN=${DASH_TOKEN:-'$DASH_TOKEN1'}
+  AGENT_UUID=${AGENT_UUID:-"$AGENT_UUID1"}
+  DASH_TOKEN=${DASH_TOKEN:-"$DASH_TOKEN1"}
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
