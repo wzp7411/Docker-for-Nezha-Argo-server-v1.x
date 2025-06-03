@@ -27,11 +27,13 @@ ghcr.io/makewemm/nezv1:latest
 
 建议利用nezha.yaml制作自己的镜像
 
-注意哪吒v1绑定GitHub与v0不同
+#### 注意哪吒v1绑定GitHub与v0不同
 
 v0为 `https://你的面板域名/oauth2/callback`
 
 v1为 `https://你的面板域名/api/v1/oauth2/callback` 
+
+其他变量设置方便与v0完全相同即可
 
 # 附上F大哪吒面板原始教程:
 
