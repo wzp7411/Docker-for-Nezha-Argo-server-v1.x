@@ -7,6 +7,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
   GH_PROXY='https://ghproxy.lvedong.eu.org/'
   GRPC_PROXY_PORT=${GRPC_PROXY_PORT:-'443'}
   DASH_VER=${DASH_VER:-'v1.12.4'}
+  AGENT_VER=${AGENT_VER:-'v1.12.2'}
   if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
     GRPC_PORT=${GRPC_PORT:-'5555'}
     WEB_PORT=${WEB_PORT:-'8080'}
@@ -137,7 +138,7 @@ EOF
   
   wget -qO $WORK_DIR/cloudflared ${GH_PROXY}https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$ARCH
   if [ "$IS_UPDATE" = 'no' ]; then
-  AGENT_VER=${AGENT_VER:-'v0.17.5'}
+  
   AGENT_VER=$(add_v_prefix "$AGENT_VER")
   echo "AGENT_VER = $AGENT_VER"
   wget -O $WORK_DIR/nezha-agent.zip ${GH_PROXY}https://github.com/nezhahq/agent/releases/download/${AGENT_VER}/nezha-agent_linux_$ARCH.zip
