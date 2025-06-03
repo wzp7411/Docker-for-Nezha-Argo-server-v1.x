@@ -29,7 +29,9 @@ ghcr.io/makewemm/nezv1:latest
 
 注意哪吒v1绑定GitHub与v0不同
 
-v0为 `https://你的面板域名/oauth2/callback`，v1为 `https://你的面板域名/api/v1/oauth2/callback` |
+v0为 `https://你的面板域名/oauth2/callback`
+
+v1为 `https://你的面板域名/api/v1/oauth2/callback` 
 
 # 附上F大哪吒面板原始教程:
 
