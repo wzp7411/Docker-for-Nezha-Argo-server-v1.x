@@ -60,6 +60,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
 
    # 使用caddy反代
     GRPC_PROXY_RUN="$WORK_DIR/caddy run --config $WORK_DIR/Caddyfile --watch"
+    if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
   cat > $WORK_DIR/Caddyfile  << EOF
 {
     http_port $CADDY_HTTP_PORT
@@ -98,6 +99,32 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
 }
 
 EOF
+ else
+  cat > $WORK_DIR/Caddyfile  << EOF
+{
+    http_port $CADDY_HTTP_PORT
+}
+
+:$PRO_PORT {
+    reverse_proxy {
+        to localhost:$WEB_PORT
+    }
+}
+
+:$GRPC_PROXY_PORT {
+    reverse_proxy {
+        to localhost:$GRPC_PORT
+        transport http {
+            versions h2c 2
+        }
+    }
+    tls $WORK_DIR/nezha.pem $WORK_DIR/nezha.key
+}
+
+EOF
+ fi
+
+
  
   # 下载需要的应用
   add_v_prefix() {
