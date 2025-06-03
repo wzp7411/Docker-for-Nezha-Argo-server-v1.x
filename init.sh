@@ -172,8 +172,12 @@ site:
   Theme: "default"
 EOF
 else
-    DASH_TOKEN=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32)
-    AGENT_UUID=$(openssl rand -hex 16 | sed 's/\(........\)\(....\)\(....\)\(....\)\(............\)/\1-\2-\3-\4-\5/')
+  seed="${ARGO_DOMAIN}${GH_CLIENTSECRET}${GH_CLIENTID}${GH_USER}"
+  hash=$(echo -n "$seed" | sha256sum | cut -d' ' -f1)
+  AGENT_UUID="${hash:0:8}-${hash:8:4}-${hash:12:4}-${hash:16:4}-${hash:20:12}"
+
+  token_hash=$(echo -n "TOKEN_${seed}" | sha256sum | cut -d' ' -f1)
+  DASH_TOKEN=$(echo -n "$token_hash" | tr 'abcdef' 'ABCDEF' | head -c 32)
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
