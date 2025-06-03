@@ -60,6 +60,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
 
    # 使用caddy反代
     GRPC_PROXY_RUN="$WORK_DIR/caddy run --config $WORK_DIR/Caddyfile --watch"
+  cat > $WORK_DIR/Caddyfile  << EOF
 {
     http_port $CADDY_HTTP_PORT
 }
