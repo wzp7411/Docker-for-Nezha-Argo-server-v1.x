@@ -219,14 +219,14 @@ install_host: $ARGO_DOMAIN:$GRPC_PROXY_PORT
 location: Asia/Shanghai
 tls: true
 oauth2:
-   GitHub:
+  GitHub:
      client_id: "$GH_CLIENTID"
      client_secret: "$GH_CLIENTSECRET"
-     endpoint:
-       auth_url: "https://github.com/login/oauth/authorize"
-       token_url: "https://github.com/login/oauth/access_token"
-     user_info_url: "https://api.github.com/user"
-     user_id_path: "id"
+    endpoint:
+      auth_url: "https://github.com/login/oauth/authorize"
+      token_url: "https://github.com/login/oauth/access_token"
+    user_info_url: "https://api.github.com/user"
+    user_id_path: "id"
 EOF
 
     cat > ${WORK_DIR}/data/config.yml << EOF
