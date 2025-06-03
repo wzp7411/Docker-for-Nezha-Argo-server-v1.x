@@ -174,10 +174,12 @@ EOF
 else
   seed="${ARGO_DOMAIN}${GH_CLIENTSECRET}${GH_CLIENTID}${GH_USER}"
   hash=$(echo -n "$seed" | sha256sum | cut -d' ' -f1)
-  AGENT_UUID="${hash:0:8}-${hash:8:4}-${hash:12:4}-${hash:16:4}-${hash:20:12}"
+  AGENT_UUID1="${hash:0:8}-${hash:8:4}-${hash:12:4}-${hash:16:4}-${hash:20:12}"
 
   token_hash=$(echo -n "TOKEN_${seed}" | sha256sum | cut -d' ' -f1)
-  DASH_TOKEN=$(echo -n "$token_hash" | tr 'abcdef' 'ABCDEF' | head -c 32)
+  DASH_TOKEN1=$(echo -n "$token_hash" | tr 'abcdef' 'ABCDEF' | head -c 32)
+  AGENT_UUID=${AGENT_UUID:-'$AGENT_UUID1'}
+  DASH_TOKEN=${DASH_TOKEN:-'$DASH_TOKEN1'}
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
