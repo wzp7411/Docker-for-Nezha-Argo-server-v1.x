@@ -352,7 +352,7 @@ if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
    AG_RUN="$WORK_DIR/nezha-agent -s localhost:$GRPC_PORT -p $LOCAL_TOKEN"
   fi
 else
-    AG_RUN="$WORK_DIR/nezha-agent -c $WORK_DIR/data/config.yml --disable-auto-update --disable-force-update"
+    AG_RUN="$WORK_DIR/nezha-agent -c $WORK_DIR/data/config.yml"
 fi
   # 生成 supervisor 进程守护配置文件
 
