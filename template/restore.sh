@@ -133,14 +133,14 @@ if [ -e $TEMP_DIR/backup.tar.gz ]; then
   # 容器版的备份旧方案是 /dashboard 文件夹，新方案是备份工作目录 < WORK_DIR > 下的文件，此判断用于根据压缩包里的目录架构判断到哪个目录下解压，以兼容新旧备份方案
   FILE_LIST=$(tar tzf $TEMP_DIR/backup.tar.gz)
   FILE_PATH=$(sed -n 's#\(.*/\)data/sqlite\.db.*#\1#gp' <<< "$FILE_LIST")
-  if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
+ 
   # 判断备份文件里是否有用户自定义主题，如有则一并解压到临时文件夹
   CUSTOM_PATH=($(sed -n "/custom/s#$FILE_PATH\(.*custom\)/.*#\1#gp" <<< "$FILE_LIST" | sort -u))
   [ ${#CUSTOM_PATH[@]} -gt 0 ] && CUSTOM_FULL_PATH=($(for k in ${CUSTOM_PATH[@]}; do echo ${FILE_PATH}${k}; done))
   echo "↓↓↓↓↓↓↓↓↓↓ Restore-file list ↓↓↓↓↓↓↓↓↓↓"
   tar xzvf $TEMP_DIR/backup.tar.gz -C $TEMP_DIR ${CUSTOM_FULL_PATH[@]} ${FILE_PATH}data
   echo -e "↑↑↑↑↑↑↑↑↑↑ Restore-file list ↑↑↑↑↑↑↑↑↑↑\n\n"
-
+  if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
   # 还原面板配置的最新信息
   sed -i "s@HTTPPort:.*@$CONFIG_HTTPPORT@; s@Language:.*@$CONFIG_LANGUAGE@; s@^GRPCPort:.*@$CONFIG_GRPCPORT@; s@gGRPCHost:.*@I$CONFIG_GRPCHOST@; s@ProxyGRPCPort:.*@$CONFIG_PROXYGRPCPORT@; s@Type:.*@$CONFIG_TYPE@; s@Admin:.*@$CONFIG_ADMIN@; s@ClientID:.*@$CONFIG_CLIENTID@; s@ClientSecret:.*@$CONFIG_CLIENTSECRET@I" ${TEMP_DIR}/${FILE_PATH}data/config.yaml
 
@@ -162,11 +162,6 @@ if [ -e $TEMP_DIR/backup.tar.gz ]; then
     DB_TOKEN=$(sqlite3 ${TEMP_DIR}/${FILE_PATH}data/sqlite.db "select secret from servers where created_at='${LOCAL_DATE}'")
     [ -n "$DB_TOKEN" ] && LOCAL_TOKEN=$(grep 'nezha-agent -s localhost' /etc/supervisor/conf.d/damon.conf | sed 's/.*-p \([^ ]*\).*/\1/')
     [ "$DB_TOKEN" != "$LOCAL_TOKEN" ] && sqlite3 ${TEMP_DIR}/${FILE_PATH}data/sqlite.db "UPDATE servers SET secret='${LOCAL_TOKEN}' WHERE created_at='${LOCAL_DATE}';"
-   else
-  
-  # 解压缩备份文件到正式的工作文件
-    tar -xzvf $TEMP_DIR/backup.tar.gz -C $TEMP_DIR
-    cp -rf ${WORK_DIR}/data/config.yaml ${TEMP_DIR}/${FILE_PATH}data/config.yaml
     fi
   # 复制临时文件到正式的工作文件夹
     cp -rf ${TEMP_DIR}/${FILE_PATH}data/* ${WORK_DIR}/data/
