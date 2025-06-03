@@ -154,6 +154,7 @@ if [ -e $TEMP_DIR/backup.tar.gz ]; then
 
   # 如果是容器版本会有本地的客户端探针，Token 将是当前部署时生成的18位随机字符串，还原的时候，会把 sqlite.db 里的历史 Token 更换为新的。
   if [ "$IS_DOCKER" = 1 ]; then
+   if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
     [ $(type -p sqlite3) ] || apt-get -y install sqlite3
     LOCAL_DATE=$(sqlite3 ${TEMP_DIR}/${FILE_PATH}data/sqlite.db "SELECT created_at FROM servers WHERE name LIKE '%local%' COLLATE NOCASE LIMIT 1;") 
     [ -z "$LOCAL_DATE" ] && LOCAL_DATE='2023-04-23 13:02:00.770756566+08:00'
@@ -161,11 +162,13 @@ if [ -e $TEMP_DIR/backup.tar.gz ]; then
     DB_TOKEN=$(sqlite3 ${TEMP_DIR}/${FILE_PATH}data/sqlite.db "select secret from servers where created_at='${LOCAL_DATE}'")
     [ -n "$DB_TOKEN" ] && LOCAL_TOKEN=$(grep 'nezha-agent -s localhost' /etc/supervisor/conf.d/damon.conf | sed 's/.*-p \([^ ]*\).*/\1/')
     [ "$DB_TOKEN" != "$LOCAL_TOKEN" ] && sqlite3 ${TEMP_DIR}/${FILE_PATH}data/sqlite.db "UPDATE servers SET secret='${LOCAL_TOKEN}' WHERE created_at='${LOCAL_DATE}';"
-
+  else
+  
+  fi
   # 复制临时文件到正式的工作文件夹
-  cp -rf ${TEMP_DIR}/${FILE_PATH}data/* ${WORK_DIR}/data/
-  [ -d ${TEMP_DIR}/${FILE_PATH}resource ] && cp -rf ${TEMP_DIR}/${FILE_PATH}resource ${WORK_DIR}
-  rm -rf ${TEMP_DIR}
+    cp -rf ${TEMP_DIR}/${FILE_PATH}data/* ${WORK_DIR}/data/
+    [ -d ${TEMP_DIR}/${FILE_PATH}resource ] && cp -rf ${TEMP_DIR}/${FILE_PATH}resource ${WORK_DIR}
+    rm -rf ${TEMP_DIR}
   fi
   # 在本地记录还原文件名
   echo "$ONLINE" > $WORK_DIR/dbfile
