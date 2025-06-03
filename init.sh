@@ -15,6 +15,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
     GRPC_PORT=${GRPC_PORT:-'8008'}
     WEB_PORT=${WEB_PORT:-'8008'}
   fi
+  CADDY_HTTP_PORT=2052
   PRO_PORT=${PRO_PORT:-'80'}
   WORK_DIR=/dashboard
   IS_UPDATE=${IS_UPDATE:-'no'}
@@ -58,6 +59,10 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
    # 使用caddy反代
     GRPC_PROXY_RUN="$WORK_DIR/caddy run --config $WORK_DIR/Caddyfile --watch"
   cat > $WORK_DIR/Caddyfile  << EOF
+{
+    http_port $CADDY_HTTP_PORT
+}
+
 :$PRO_PORT {
     handle /${UUID} {
         file_server {
