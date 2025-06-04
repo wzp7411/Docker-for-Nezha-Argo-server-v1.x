@@ -30,7 +30,7 @@ F大原版简单修改，参数一致,可以直接把镜像替换成这个，已
 ghcr.io/makewemm/nezv1:latest
 ```
 
-建议利用nezha.yaml制作自己的镜像
+建议利用action制作自己的镜像
 
 #### 注意哪吒v1绑定GitHub与v0不同
 
