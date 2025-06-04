@@ -386,36 +386,34 @@ else
     AG_RUN="$WORK_DIR/nezha-agent -c $WORK_DIR/data/config.yml"
 fi
   # 生成 supervisor 进程守护配置文件
-
   cat > /etc/supervisor/conf.d/damon.conf << EOF
 [supervisord]
-user=root
 nodaemon=true
 logfile=/dev/null
 pidfile=/run/supervisord.pid
 
-[program:caddy]
+[program:grpcproxy]
 command=$GRPC_PROXY_RUN
 autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:nez_ser]
+[program:nezha]
 command=$WORK_DIR/app
 autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:nez_agent]
+[program:agent]
 command=$AG_RUN
 autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:cf_arg]
+[program:argo]
 command=$WORK_DIR/$ARGO_RUN
 autostart=true
 autorestart=true
@@ -426,7 +424,7 @@ EOF
 if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
     cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
-[program:web_app]
+[program:webapp]
 command=$WEB_RUN
 autostart=true
 autorestart=true
