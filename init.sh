@@ -464,8 +464,9 @@ encoded_url=$(echo -e "${x_url}\n${up_url2}" | base64 -w 0)
 echo -e $encoded_url > /tmp/list.log
 echo "============  <订阅地址:>  ========  "
 echo "  "
-echo "网址/$UUID"
-echo "$ARGO_DOMAIN/$UUID"
+echo "订阅地址1: 项目网址/$UUID"
+echo "  "
+echo "订阅地址2: $ARGO_DOMAIN/$UUID"
 echo "  "
 echo "=============================="
 fi
