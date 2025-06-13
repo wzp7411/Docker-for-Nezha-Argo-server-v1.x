@@ -6,7 +6,7 @@ V0版：https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x.git
 
 ========================
 
-F大原版简单修改，参数一致,可以直接把镜像替换成这个，已经去掉自动升级
+v1版参数设置:
 
 增加5个变量(均为可选，非必须):
 
