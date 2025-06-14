@@ -125,6 +125,7 @@ EOF
 EOF
  fi
 else
+if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
    cat > $WORK_DIR/Caddyfile  << EOF
 {
     http_port $CADDY_HTTP_PORT
