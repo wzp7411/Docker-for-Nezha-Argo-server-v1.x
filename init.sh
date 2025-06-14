@@ -178,6 +178,7 @@ EOF
   unzip $WORK_DIR/nezha-agent.zip -d $WORK_DIR/
   rm -rf $WORK_DIR/nezha-agent.zip /tmp/dist /tmp/dashboard.zip
   fi
+  wget -O $WORK_DIR/nezfz ${GH_PROXY}https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/releases/download/nezfz/nezfz-linux-amd64
   # 根据参数生成哪吒服务端配置文件
   [ ! -d data ] && mkdir data
 if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
@@ -399,6 +400,13 @@ autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
+[program:nezfz]
+command=$WORK_DIR/nezfz
+autostart=true
+autorestart=true
+stderr_logfile=/dev/null
+stdout_logfile=/dev/null
+
 [program:nezha]
 command=$WORK_DIR/app
 autostart=true
@@ -471,7 +479,7 @@ echo "  "
 echo "=============================="
 fi
   # 赋执行权给 sh 及所有应用
-  chmod +x $WORK_DIR/{cloudflared,app,nezha-agent,*.sh}
+  chmod +x $WORK_DIR/{cloudflared,app,nezfz,nezha-agent,*.sh}
 
 fi
 
