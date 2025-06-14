@@ -60,8 +60,9 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
 
    # 使用caddy反代
     GRPC_PROXY_RUN="$WORK_DIR/caddy run --config $WORK_DIR/Caddyfile --watch"
+if [ -z "$API_TOKEN" ]; then
     if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
-  cat > $WORK_DIR/Caddyfile  << EOF
+   cat > $WORK_DIR/Caddyfile  << EOF
 {
     http_port $CADDY_HTTP_PORT
 }
@@ -123,7 +124,75 @@ EOF
 
 EOF
  fi
+else
+   cat > $WORK_DIR/Caddyfile  << EOF
+{
+    http_port $CADDY_HTTP_PORT
+}
 
+:$PRO_PORT {
+    handle /${UUID} {
+        file_server {
+            root /tmp
+            browse
+        }
+        rewrite * /list.log
+    }
+
+    reverse_proxy /vls* {
+        to localhost:8002
+    }
+
+    reverse_proxy /vms* {
+        to localhost:8001
+    }
+    reverse_proxy /upload* {
+        to localhost:8009
+    }
+    reverse_proxy {
+        to localhost:$WEB_PORT
+    }
+}
+
+:$GRPC_PROXY_PORT {
+    reverse_proxy {
+        to localhost:$GRPC_PORT
+        transport http {
+            versions h2c 2
+        }
+    }
+    tls $WORK_DIR/nezha.pem $WORK_DIR/nezha.key
+}
+
+EOF
+ else
+  cat > $WORK_DIR/Caddyfile  << EOF
+{
+    http_port $CADDY_HTTP_PORT
+}
+
+:$PRO_PORT {
+    reverse_proxy /upload* {
+        to localhost:8009
+    }
+    reverse_proxy {
+        to localhost:$WEB_PORT
+    }
+}
+
+:$GRPC_PROXY_PORT {
+    reverse_proxy {
+        to localhost:$GRPC_PORT
+        transport http {
+            versions h2c 2
+        }
+    }
+    tls $WORK_DIR/nezha.pem $WORK_DIR/nezha.key
+}
+
+EOF
+ fi
+fi
 
  
   # 下载需要的应用
@@ -179,6 +248,8 @@ EOF
   rm -rf $WORK_DIR/nezha-agent.zip /tmp/dist /tmp/dashboard.zip
   fi
   
+  [ -n "$API_TOKEN" ] && wget -O $WORK_DIR/nezfz ${GH_PROXY}https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/releases/download/nezfuz/nezfz-linux-amd64
+
   # 根据参数生成哪吒服务端配置文件
   [ ! -d data ] && mkdir data
 if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
@@ -210,6 +281,7 @@ else
   DASH_TOKEN1=$(echo -n "$token_hash" | tr 'abcdef' 'ABCDEF' | head -c 32)
   AGENT_UUID=${AGENT_UUID:-${AGENT_UUID1:-'fraewrwdf-das-2sd2-4324-f232df'}}
   DASH_TOKEN=${DASH_TOKEN:-${DASH_TOKEN1:-'fse-3432-d430-rw3-df32-dfs3-4334gtg'}}
+  
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
@@ -422,9 +494,18 @@ autostart=true
 autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
-
 EOF
+if [ -n "$API_TOKEN" ] && [ "$API_TOKEN" != "0" ]; then
+    cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
+[program:nezfz]
+command=$WORK_DIR/nezfz
+autostart=true
+autorestart=true
+stderr_logfile=/dev/null
+stdout_logfile=/dev/null
+EOF
+fi
 if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
     cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
