@@ -26,6 +26,7 @@ v1版参数设置:
 
 #### 6.API_TOKEN,可选，填和DASH_TOKEN一样的值
 
+小技巧提示:同时填上DASH_TOKEN，API_TOKEN，就不用填GitHub备份的三个参数，即不需要备份了
 
 #### docker镜像(默认面板端口80):
 ```
