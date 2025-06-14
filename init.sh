@@ -252,6 +252,8 @@ use_ipv6_country_code: false
 uuid: $AGENT_UUID
 EOF
 fi
+export API_TOKEN=${API_TOKEN:-${DASH_TOKEN:-'123456'}}
+
   # 下载包含本地数据的 sqlite.db 文件，生成18位随机字符串用于本地 Token
   if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
    if [ ! -f "${WORK_DIR}/data/sqlite.db" ]; then
