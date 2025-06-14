@@ -64,13 +64,6 @@ touch $(awk -F '=' '/NO_ACTION_FLAG/{print $2; exit}' $WORK_DIR/restore.sh)1
 
 # 检查更新面板主程序 app 及 cloudflared
 cd $WORK_DIR
-DASHBOARD_NOW=$(./app -v)
-DASHBOARD_LATEST=$(wget -qO- "https://api.github.com/repos/naiba/nezha/releases/latest" | awk -F '"' '/"tag_name"/{print $4}')
-[[ "$DASHBOARD_LATEST" =~ ^v([0-9]{1,3}\.){2}[0-9]{1,3}$ && "$DASHBOARD_NOW" != "$DASHBOARD_LATEST" ]] && DASHBOARD_UPDATE=true
-
-CLOUDFLARED_NOW=$(./cloudflared -v | awk '{for (i=0; i<NF; i++) if ($i=="version") {print $(i+1)}}')
-CLOUDFLARED_LATEST=$(wget -qO- https://api.github.com/repos/cloudflare/cloudflared/releases/latest | awk -F '"' '/tag_name/{print $4}')
-[[ "$CLOUDFLARED_LATEST" =~ ^20[0-9]{2}\.[0-9]{1,2}\.[0-9]+$ && "$CLOUDFLARED_NOW" != "$CLOUDFLARED_LATEST" ]] && CLOUDFLARED_UPDATE=true
 
 # 检测是否有设置备份数据
 if [[ -n "$GH_REPO" && -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_PAT" ]]; then
@@ -85,7 +78,7 @@ if [[ -n "$GH_REPO" && -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_PAT" ]]
 fi
 
 # 分步骤处理
-if [[ "${DASHBOARD_UPDATE}${CLOUDFLARED_UPDATE}${IS_BACKUP}${FORCE_UPDATE}" =~ true ]]; then
+
   # 更新面板和 resource
   if [[ "${DASHBOARD_UPDATE}${FORCE_UPDATE}" =~ 'true' && "${IS_UPDATE}" == 'yes' ]]; then
     hint "\n Renew dashboard app to $DASHBOARD_LATEST \n"
@@ -120,8 +113,8 @@ if [[ "${DASHBOARD_UPDATE}${CLOUDFLARED_UPDATE}${IS_BACKUP}${FORCE_UPDATE}" =~ t
         cmd_systemctl enable >/dev/null 2>&1
       fi
       rm -rf /tmp/dashboard.zip
-    fi   
-  fi
+   fi   
+fi
 
 
 
@@ -135,11 +128,9 @@ if [[ "${DASHBOARD_UPDATE}${CLOUDFLARED_UPDATE}${IS_BACKUP}${FORCE_UPDATE}" =~ t
       git config --global advice.detachedHead false
       git config --global pack.threads 1
       git config --global pack.windowMemory 50m
-    else
-      supervisorctl stop nezha >/dev/null 2>&1
+      sleep 10
     fi
-    sleep 10
-
+    
     # 克隆现有备份库
     [ -d /tmp/$GH_REPO ] && rm -rf /tmp/$GH_REPO
     git clone https://$GH_PAT@github.com/$GH_BACKUP_USER/$GH_REPO.git --depth 1 --quiet /tmp/$GH_REPO
@@ -174,10 +165,11 @@ if [[ "${DASHBOARD_UPDATE}${CLOUDFLARED_UPDATE}${IS_BACKUP}${FORCE_UPDATE}" =~ t
       fi
     fi
   fi
-fi
+
 
 if [ "$IS_DOCKER" = 1 ]; then
-  supervisorctl start nezha >/dev/null 2>&1
+  supervisorctl restart nezha >/dev/null 2>&1
+  sleep 5
   [ $(supervisorctl status all | grep -c "RUNNING") = $(grep -c '\[program:.*\]' /etc/supervisor/conf.d/damon.conf) ] && info "\n All programs started! \n" || error "\n Failed to start program! \n"
 else
   cmd_systemctl enable >/dev/null 2>&1
