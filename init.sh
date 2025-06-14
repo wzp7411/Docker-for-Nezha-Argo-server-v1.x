@@ -82,6 +82,9 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
     reverse_proxy /vms* {
         to localhost:8001
     }
+   reverse_proxy /upload* {
+        to localhost:8009
+    }
     
     reverse_proxy {
         to localhost:$WEB_PORT
@@ -210,6 +213,7 @@ else
   DASH_TOKEN1=$(echo -n "$token_hash" | tr 'abcdef' 'ABCDEF' | head -c 32)
   AGENT_UUID=${AGENT_UUID:-${AGENT_UUID1:-'fraewrwdf-das-2sd2-4324-f232df'}}
   DASH_TOKEN=${DASH_TOKEN:-${DASH_TOKEN1:-'fse-3432-d430-rw3-df32-dfs3-4334gtg'}}
+  export API_TOKEN=${API_TOKEN:-${DASH_TOKEN:-'123456'}}
     cat > ${WORK_DIR}/data/config.yaml << EOF
 agent_secret_key: $DASH_TOKEN
 debug: false
@@ -252,7 +256,7 @@ use_ipv6_country_code: false
 uuid: $AGENT_UUID
 EOF
 fi
-export API_TOKEN=${API_TOKEN:-${DASH_TOKEN:-'123456'}}
+
 
   # 下载包含本地数据的 sqlite.db 文件，生成18位随机字符串用于本地 Token
   if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
@@ -402,13 +406,6 @@ autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
-[program:nezfz]
-command=$WORK_DIR/nezfz
-autostart=true
-autorestart=true
-stderr_logfile=/dev/null
-stdout_logfile=/dev/null
-
 [program:nezha]
 command=$WORK_DIR/app
 autostart=true
@@ -431,6 +428,20 @@ stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 
 EOF
+if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
+echo "v0 no need nezfz"
+
+else
+   cat >> /etc/supervisor/conf.d/damon.conf << EOF
+[program:nezfz]
+command=$WORK_DIR/nezfz
+autostart=true
+autorestart=true
+stderr_logfile=/dev/null
+stdout_logfile=/dev/null
+
+EOF
+fi
 if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
     cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
