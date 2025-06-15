@@ -67,7 +67,7 @@ v1为 `https://你的面板域名/api/v1/oauth2/callback`
 
 # 附上F大哪吒面板原始教程地址:
 
-使用 Argo 隧道的哪吒服务端
+[使用 Argo 隧道的哪吒服务端](https://github.com/fscarmen2/Argo-Nezha-Service-Container.git)
 
 
 * * *
