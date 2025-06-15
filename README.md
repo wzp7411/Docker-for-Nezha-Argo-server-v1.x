@@ -43,7 +43,7 @@ v1版参数设置:
 
 #### docker镜像(默认面板端口80):
 ```
-ghcr.io/makewemm/nezv1:latest
+daxia2023/nezv1:latest
 ```
 
 建议利用action制作自己的镜像
