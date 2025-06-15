@@ -26,6 +26,8 @@ v1版参数设置:
 
 #### 6.API_TOKEN,可选，填和DASH_TOKEN一样的值,填上则支持客户端设置名字，不填则不支持
 
+API_TOKEN设置后，配置玩具脚本，可以在玩具上直接设置哪吒面板显示的名字
+
 小技巧提示:同时填上DASH_TOKEN，API_TOKEN，就不用填GitHub备份的三个参数，即不需要备份了
 
 ## 建议配置
@@ -38,7 +40,7 @@ v1版参数设置:
 | `GH_CLIENTID` | GitHub OAuth 客户端 ID | String | 是 | `Iv1.xxxxxxxxxxxxxxxx` |
 | `GH_USER` | GitHub 用户名 | String | 是 | `username` |
 | `UUID` | 节点需要 | UUID | 否 | `550e8400-e29b-41d4-a716-446655440000` |
-| `API_TOKEN` | 客户端 API 令牌，客户端设置名字需要 | String | 是 | `填DASH_TOKEN相同值` |
+| `API_TOKEN` | 客户端设置节点名字需要 | String | 否 | `填DASH_TOKEN相同值` |
 | `DASH_TOKEN` | 哪吒监控面板密钥 | String | 是| `即哪吒KEY` |
 
 #### docker镜像(默认面板端口80):
