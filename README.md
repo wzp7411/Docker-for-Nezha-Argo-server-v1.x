@@ -33,7 +33,7 @@ v1版参数设置:
 | 变量名 | 描述 | 类型 | 必需 | 示例 |
 |--------|------|------|------|------|
 | `ARGO_DOMAIN` | Cloudflare Argo 隧道域名 | String | 是| `example.com` |
-| `ARGO_AUTH` | Argo 隧道认证信息 | String/JSON | 是 | `token` 或 `{"AccountTag":"xxx","TunnelSecret":"yyy"}` |
+| `ARGO_AUTH` | Argo 隧道认证信息 | token/JSON | 是 | `token` 或 `{"AccountTag":"xxx","TunnelSecret":"yyy"}` |
 | `GH_CLIENTSECRET` | GitHub OAuth 客户端密钥 | String | 是 | `ghs_xxxxxxxxxxxxxxxxxxxx` |
 | `GH_CLIENTID` | GitHub OAuth 客户端 ID | String | 是 | `Iv1.xxxxxxxxxxxxxxxx` |
 | `GH_USER` | GitHub 用户名 | String | 是 | `username` |
