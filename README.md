@@ -1,4 +1,4 @@
-## Docker-for-Nezha-Argo-server-v1.x，兼容v0，但是备份不支持互相迁移
+## Docker-for-Nezha-Argo-server-v1.x
 
 V0版：https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x.git
 
