@@ -30,7 +30,7 @@ API_TOKEN设置后，需配置玩具脚本，可以在玩具上直接设置哪�
 
 小技巧提示:使用玩具脚本，同时填上DASH_TOKEN，API_TOKEN，就不用填GitHub备份的三个参数，即不需要备份了
 
-## 建议配置(需配合玩具脚本，否则要填上备份的三个参数)
+## 建议配置(本人在koyeb部署配置)
 
 | 变量名 | 描述 | 类型 | 必需 | 示例 |
 |--------|------|------|------|------|
@@ -39,6 +39,9 @@ API_TOKEN设置后，需配置玩具脚本，可以在玩具上直接设置哪�
 | `GH_CLIENTSECRET` | GitHub OAuth 客户端密钥 | String | 是 | `ghs_xxxxxxxxxxxxxxxxxxxx` |
 | `GH_CLIENTID` | GitHub OAuth 客户端 ID | String | 是 | `Iv1.xxxxxxxxxxxxxxxx` |
 | `GH_USER` | GitHub 用户名 | String | 是 | `username` |
+| `GH_PAT` | 备份需要 | GitHubap密钥 | 否 | `` |
+| `GH_EMAIL` | 备份需要 | GitHub账号 | 否 | `` |
+| `GH_REPO` | 备份需要 | GitHub备份仓库 | 否 | `具体看F大佬原教程` |
 | `UUID` | 节点需要 | UUID | 否 | `550e8400-e29b-41d4-a716-446655440000` |
 | `API_TOKEN` | 客户端设置节点名字需要，需配合玩具脚本 | String | 否 | `填DASH_TOKEN相同值` |
 | `DASH_TOKEN` | 哪吒监控面板密钥 | String | 是| `即哪吒KEY` |
