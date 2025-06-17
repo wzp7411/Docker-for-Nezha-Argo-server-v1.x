@@ -8,7 +8,7 @@ V0版：https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x.git
 
 v1版参数设置:
 
-增加5个变量(均为可选，非必须):
+增加6个变量(均为可选，非必须):
 
 #### 1.变量UUID，可选，设置则开启自带节点，否则不开启，支持vless和vmess协议
 
@@ -24,6 +24,7 @@ v1版参数设置:
 
 #### 5.变量DASH_TOKEN,可选，客户端的哪吒key，不填则自动生成
 
+#### 6.变量API_TOKEN,可选，客户端设置节点名称的token,设置成与上面DASH_TOKEN相同的值
 
 ## 建议配置(本人在koyeb部署配置，仅供参考,512m以上内存)
 
@@ -38,7 +39,7 @@ v1版参数设置:
 | `GH_EMAIL` | 备份需要 | GitHub账号 | 否 | `` |
 | `GH_REPO` | 备份需要 | GitHub备份仓库 | 否 | `具体看F大佬原教程` |
 | `DASH_TOKEN` | 客户端使用的哪吒KEY | nezha_key | 是| `即客户端使用的哪吒KEY` |
-
+| `API_TOKEN` | 客户端节点设置名字的token | 设置与DASH_TOKEN相同的值 | 否| `不设置则不支持客户端设置名字` |
 #### docker镜像(默认面板端口80):
 ```
 daxia2023/nezv1:latest
