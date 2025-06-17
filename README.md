@@ -41,7 +41,6 @@ API_TOKEN设置后，需配置玩具脚本，可以在玩具上直接设置哪�
 | `GH_PAT` | 备份需要 | GitHubap密钥 | 否 | `` |
 | `GH_EMAIL` | 备份需要 | GitHub账号 | 否 | `` |
 | `GH_REPO` | 备份需要 | GitHub备份仓库 | 否 | `具体看F大佬原教程` |
-| `API_TOKEN` | 客户端设置节点名字需要| 可选 | 否 | `填下面DASH_TOKEN相同值` |
 | `DASH_TOKEN` | 客户端使用的哪吒KEY | nezha_key | 是| `即客户端使用的哪吒KEY` |
 
 #### docker镜像(默认面板端口80):
