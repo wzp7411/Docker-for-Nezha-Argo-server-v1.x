@@ -8,7 +8,7 @@ V0版：https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x.git
 
 v1版参数设置:
 
-增加6个变量(均为可选，非必须):
+增加5个变量(均为可选，非必须):
 
 #### 1.变量UUID，可选，设置则开启自带节点，否则不开启，支持vless和vmess协议
 
@@ -23,10 +23,6 @@ v1版参数设置:
 #### 4.变量AGENT_UUID,可选，固定本地哪吒KEY，不填则自动生成
 
 #### 5.变量DASH_TOKEN,可选，客户端的哪吒key，不填则自动生成
-
-#### 6.API_TOKEN,可选，填和DASH_TOKEN一样的值,填上则支持客户端设置名字，不填则不支持
-
-API_TOKEN设置后，需配置玩具脚本，可以在玩具上直接设置哪吒面板显示的名字
 
 
 ## 建议配置(本人在koyeb部署配置，仅供参考,512m以上内存)
