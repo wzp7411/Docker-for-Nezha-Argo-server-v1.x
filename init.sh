@@ -423,6 +423,27 @@ EOF
 
   # 生成 backup2.sh 文件的步骤2 - 在线获取 template/bakcup.sh 模板生成完整 backup.sh 文件
   wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/backup2.sh | sed '1,/^########/d' >> $WORK_DIR/backup2.sh
+ cat > $WORK_DIR/update.sh << EOF
+  #!/usr/bin/env bash
+
+# backup.sh 传参 a 自动还原； 传参 m 手动还原； 传参 f 强制更新面板 app 文件及 cloudflared 文件，并备份数据至成备份库
+IS_UPDATE=$IS_UPDATE
+LOCAL_TOKEN=$LOCAL_TOKEN
+GH_PROXY=$GH_PROXY
+GH_PAT=$GH_PAT
+GH_BACKUP_USER=$GH_BACKUP_USER
+GH_EMAIL=$GH_EMAIL
+GH_REPO=$GH_REPO
+ARCH=$ARCH
+WORK_DIR=$WORK_DIR
+DAYS=5
+IS_DOCKER=1
+DASH_VER=$DASH_VER
+########
+EOF
+
+  # 生成 update.sh 文件的步骤2 - 在线获取 template/bakcup.sh 模板生成完整 backup.sh 文件
+  wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/update.sh | sed '1,/^########/d' >> $WORK_DIR/update.sh
   
   if [[ -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_REPO" && -n "$GH_PAT" ]]; then
     # 生成 restore.sh 文件的步骤1 - 设置环境变量
@@ -466,6 +487,7 @@ EOF
   # 生成定时任务: 1.每天北京时间 3:30:00 更新备份和还原文件，2.每天北京时间 4:00:00 备份一次，并重启 cron 服务； 3.每分钟自动检测在线备份文件里的内容
   [ -z "$NO_AUTO_RENEW" ] && [ -s $WORK_DIR/renew.sh ] && ! grep -q "$WORK_DIR/renew.sh" /etc/crontab && echo "30 3 * * * root bash $WORK_DIR/renew.sh" >> /etc/crontab
   [ -s $WORK_DIR/backup.sh ] && ! grep -q "$WORK_DIR/backup.sh" /etc/crontab && echo "0 * * * * root bash $WORK_DIR/backup.sh a" >> /etc/crontab
+  [ -s $WORK_DIR/update.sh ] && ! grep -q "$WORK_DIR/update.sh" /etc/crontab && echo "0 4 * * * root bash $WORK_DIR/update.sh a" >> /etc/crontab
   [ -z "$NO_RES" ] && [ -s $WORK_DIR/restore.sh ] && ! grep -q "$WORK_DIR/restore.sh" /etc/crontab && echo "* * * * * root bash $WORK_DIR/restore.sh a" >> /etc/crontab
   service cron restart
 
