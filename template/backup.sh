@@ -76,48 +76,6 @@ if [[ -n "$GH_REPO" && -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_PAT" ]]
     IS_BACKUP=true
   fi
 fi
-
-# 分步骤处理
-
-  # 更新面板和 resource
-  if [[ "${DASHBOARD_UPDATE}${FORCE_UPDATE}" =~ 'true' && "${IS_UPDATE}" == 'yes' ]]; then
-    hint "\n Renew dashboard app to $DASHBOARD_LATEST \n"
-    wget -O /tmp/dashboard.zip ${GH_PROXY}https://github.com/naiba/nezha/releases/download/$DASHBOARD_LATEST/dashboard-linux-$ARCH.zip
-    unzip /tmp/dashboard.zip -d /tmp
-    if [ -s /tmp/dist/dashboard-linux-$ARCH ]; then
-      info "\n Restart Nezha Dashboard \n"
-      if [ "$IS_DOCKER" = 1 ]; then
-        supervisorctl stop nezha >/dev/null 2>&1
-        sleep 10
-        mv -f /tmp/dist/dashboard-linux-$ARCH $WORK_DIR/app
-        supervisorctl start nezha >/dev/null 2>&1
-      else
-        cmd_systemctl disable >/dev/null 2>&1
-        sleep 10
-        mv -f /tmp/dist/dashboard-linux-$ARCH $WORK_DIR/app
-        cmd_systemctl enable >/dev/null 2>&1
-      fi
-      rm -rf /tmp/dist /tmp/dashboard.zip
-    fi
-   if [ -s /tmp/dashboard-linux-$ARCH ]; then
-      info "\n Restart Nezha Dashboard \n"
-      if [ "$IS_DOCKER" = 1 ]; then
-        supervisorctl stop nezha >/dev/null 2>&1
-        sleep 10
-        mv -f /tmp/dashboard-linux-$ARCH $WORK_DIR/app
-        supervisorctl start nezha >/dev/null 2>&1
-      else
-        cmd_systemctl disable >/dev/null 2>&1
-        sleep 10
-        mv -f /tmp/dashboard-linux-$ARCH $WORK_DIR/app
-        cmd_systemctl enable >/dev/null 2>&1
-      fi
-      rm -rf /tmp/dashboard.zip
-   fi   
-fi
-
-
-
   # 克隆备份仓库，压缩备份文件，上传更新
   if [ "$IS_BACKUP" = 'true' ]; then
     # 备份前先停掉面板，设置 git 环境变量，减少系统开支
@@ -166,12 +124,3 @@ fi
     fi
   fi
 
-
-#if [ "$IS_DOCKER" = 1 ]; then
-  #supervisorctl restart nezha >/dev/null 2>&1
-  #sleep 5
- # [ $(supervisorctl status all | grep -c "RUNNING") = $(grep -c '\[program:.*\]' /etc/supervisor/conf.d/damon.conf) ] && info "\n All programs started! \n" || error "\n Failed to start program! \n"
-#else
- # cmd_systemctl enable >/dev/null 2>&1
- # [ "$(systemctl is-active nezha-dashboard)" = 'active' ] && info "\n Nezha dashboard started! \n" || error "\n Failed to start Nezha dashboard! \n"
-#fi
