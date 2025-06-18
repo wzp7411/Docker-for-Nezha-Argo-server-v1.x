@@ -23,7 +23,7 @@ mkdir -p $TEMP_DIR
 for i in {renew,backup,restore,backup2,update.sh}; do
   if [ -s $WORK_DIR/$i.sh ]; then
     sed -n '1,/^########/p' $WORK_DIR/$i.sh > $TEMP_DIR/$i.sh
-    wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x/main/template/$i.sh | sed '1,/^########/d' >> $TEMP_DIR/$i.sh
+    wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/$i.sh | sed '1,/^########/d' >> $TEMP_DIR/$i.sh
     [ $(wc -l $TEMP_DIR/$i.sh | awk '{print $1}') -gt 20 ] && chmod +x $TEMP_DIR/$i.sh && mv -f $TEMP_DIR/$i.sh $WORK_DIR/ && info "\n Update $i.sh Successful. \n" || warning "\n Update $i.sh failed.\n" 
   fi
 done
