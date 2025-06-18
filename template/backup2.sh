@@ -23,38 +23,6 @@ error() { echo -e "\033[31m\033[01m$*\033[0m" && exit 1; } # 红色
 info() { echo -e "\033[32m\033[01m$*\033[0m"; }   # 绿色
 hint() { echo -e "\033[33m\033[01m$*\033[0m"; }   # 黄色
 
-cmd_systemctl() {
-  local ENABLE_DISABLE=$1
-  if [ "$ENABLE_DISABLE" = 'enable' ]; then
-    if [ "$SYSTEM" = 'Alpine' ]; then
-      local TRY=5
-      until [ $(systemctl is-active nezha-dashboard) = 'active' ]; do
-        systemctl stop nezha-dashboard; sleep 1
-        systemctl start nezha-dashboard
-        ((TRY--))
-        [ "$TRY" = 0 ] && break
-      done
-      cat > /etc/local.d/nezha-dashboard.start << ABC
-#!/usr/bin/env bash
-
-systemctl start nezha-dashboard
-ABC
-      chmod +x /etc/local.d/nezha-dashboard.start
-      rc-update add local >/dev/null 2>&1
-    else
-      systemctl enable --now nezha-dashboard
-    fi
-
-  elif [ "$ENABLE_DISABLE" = 'disable' ]; then
-    if [ "$SYSTEM" = 'Alpine' ]; then
-      systemctl stop nezha-dashboard
-      rm -f /etc/local.d/nezha-dashboard.start
-    else
-      systemctl disable --now nezha-dashboard
-    fi
-  fi
-}
-
 # 运行备份脚本时，自锁一定时间以防 Github 缓存的原因导致数据马上被还原
 touch $(awk -F '=' '/NO_ACTION_FLAG/{print $2; exit}' $WORK_DIR/restore.sh)1
 
