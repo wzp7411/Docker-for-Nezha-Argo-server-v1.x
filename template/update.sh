@@ -62,8 +62,16 @@ touch $(awk -F '=' '/NO_ACTION_FLAG/{print $2; exit}' $WORK_DIR/restore.sh)1
 [ "$1" = 'a' ] && WAY=Scheduled || WAY=Manualed
 [ "$1" = 'f' ] && WAY=Manualed && FORCE_UPDATE=true
 
-# 检查更新面板主程序 app 及 cloudflared
-cd $WORK_DIR
+
+# 检查更新面板主程序 app
+if [[ -z "$DASHBOARD_VERSION" || "$DASHBOARD_VERSION" =~ 0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
+  cd $WORK_DIR
+  DASHBOARD_NOW=$(./app -v)
+  [ -z "$DASHBOARD_VERSION" ] && DASHBOARD_LATEST='v0.20.13' || DASHBOARD_LATEST=$(sed 's/v//; s/^/v&/' <<< "$DASHBOARD_VERSION")
+  [ "v${DASHBOARD_NOW}" != "$DASHBOARD_LATEST" ] && DASHBOARD_UPDATE=true
+else
+  error "The DASHBOARD_VERSION variable should be in a format like v0.00.00, please check."
+fi
 
 # 检测是否有设置备份数据
 if [[ -n "$GH_REPO" && -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_PAT" ]]; then
