@@ -34,10 +34,10 @@ v1版参数设置:
 |--------|------|------|------|------|
 | `ARGO_DOMAIN` | Cloudflare Argo 隧道域名 | String | 是| `example.com` |
 | `ARGO_AUTH` | Argo 隧道认证信息 | token/JSON | 是 | `token` 或 `{"AccountTag":"xxx","TunnelSecret":"yyy"}` |
-| `GH_CLIENTSECRET` | GitHub OAuth 客户端密钥 | String | 是 | `ghs_xxxxxxxxxxxxxxxxxxxx` |
-| `GH_CLIENTID` | GitHub OAuth 客户端 ID | String | 是 | `Iv1.xxxxxxxxxxxxxxxx` |
-| `GH_USER` | GitHub 用户名 | String | 是 | `username` |
-| `GH_PAT` | 备份需要 | GitHubap密钥 | 否 | `` |
+| `GH_CLIENTSECRET` | GitHub OAuth 客户端密钥 | 绑定GitHub需要，使用密码不用填 | 否 | `ghs_xxxxxxxxxxxxxxxxxxxx` |
+| `GH_CLIENTID` | GitHub OAuth 客户端 ID | 绑定GitHub需要，使用密码不用填 | 否 | `Iv1.xxxxxxxxxxxxxxxx` |
+| `GH_USER` | GitHub 用户名 | 绑定GitHub需要，使用密码不用填 | 否 | `username` |
+| `GH_PAT` | 备份需要，如果可以挂载存储，不用填 | GitHubap密钥 | 否 | `` |
 | `GH_EMAIL` | 备份需要 | GitHub账号 | 否 | `` |
 | `GH_REPO` | 备份需要 | GitHub备份仓库 | 否 | `具体看F大佬原教程` |
 | `DASH_TOKEN` | 客户端使用的哪吒KEY | nezha_key | 是| `即客户端使用的哪吒KEY` |
