@@ -6,7 +6,6 @@ V0版：https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x.git
 
 推荐个美化: https://1keji.net/t/topic/182
 
-效果: https://koyeb.nyc.mn
 ========================
 
 v1版参数设置:
