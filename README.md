@@ -28,7 +28,9 @@ v1版参数设置:
 
 这个API_TOKEN功能，需要配合玩具脚本，在客户端设置SUB_NAME为节点名称，则哪吒面板会自动设置名字
 
-玩具脚本(游戏机,Docker机，VPS通用版本，核心变量脚本功能一致):
+小技巧:添加完节点可以手动进本地哪吒输入./backup.sh备份,这样就不会丢失数据
+
+玩具脚本(游戏机,Docker机，VPS通用版本):
 ```
 https://github.com/dsadsadsss/java-wanju.git
 ```
