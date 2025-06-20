@@ -28,6 +28,11 @@ v1版参数设置:
 
 这个API_TOKEN功能，需要配合玩具脚本，在客户端设置SUB_NAME为节点名称，则哪吒面板会自动设置名字
 
+玩具脚本(游戏机,Docker机，VPS通用版本，核心变量脚本功能一致):
+```
+https://github.com/dsadsadsss/java-wanju.git
+```
+
 ## 建议配置(本人在koyeb部署配置，仅供参考,512m以上内存)
 
 | 变量名 | 描述 | 类型 | 必需 | 示例 |
