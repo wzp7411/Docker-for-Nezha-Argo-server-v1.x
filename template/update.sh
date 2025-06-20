@@ -67,7 +67,7 @@ touch $(awk -F '=' '/NO_ACTION_FLAG/{print $2; exit}' $WORK_DIR/restore.sh)1
 if [[ -z "$DASHBOARD_VERSION" || "$DASHBOARD_VERSION" =~ 0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
   cd $WORK_DIR
   DASHBOARD_NOW=$(./app -v)
-  [ -z "$DASHBOARD_VERSION" ] && DASHBOARD_LATEST='v0.20.13' || DASHBOARD_LATEST=$(sed 's/v//; s/^/v&/' <<< "$DASHBOARD_VERSION")
+  [ -z "$DASHBOARD_VERSION" ] && DASHBOARD_LATEST=$(sed 's/v//; s/^/v&/' <<< "$DASHBOARD_VERSION")
   [ "v${DASHBOARD_NOW}" != "$DASHBOARD_LATEST" ] && DASHBOARD_UPDATE=true
 else
   error "The DASHBOARD_VERSION variable should be in a format like v0.00.00, please check."
@@ -173,6 +173,7 @@ fi
       fi
     fi
   fi
+  
 if [ "$IS_DOCKER" = 1 ]; then
   supervisorctl start nezha >/dev/null 2>&1
   [ $(supervisorctl status all | grep -c "RUNNING") = $(grep -c '\[program:.*\]' /etc/supervisor/conf.d/damon.conf) ] && info "\n All programs started! \n" || error "\n Failed to start program! \n"
