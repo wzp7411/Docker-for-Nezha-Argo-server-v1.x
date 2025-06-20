@@ -1,7 +1,5 @@
 ## Docker-for-Nezha-Argo-server-v1.x
 
-提示：开机后节点名字会混乱，等待约1分钟会自动恢复备份，节点名字就正常了
-
 V0版：https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x.git
 
 #### 节点与哪吒融于一体，即可当哪吒面板，也可当节点使用
@@ -27,6 +25,8 @@ v1版参数设置:
 #### 5.变量DASH_TOKEN,可选，客户端的哪吒key，不填则自动生成
 
 #### 6.变量API_TOKEN,可选，客户端设置节点名称的token,设置成与上面DASH_TOKEN相同的值
+
+这个API_TOKEN功能，需要配合玩具脚本，在客户端设置SUB_NAME为节点名称，则哪吒面板会自动设置名字
 
 ## 建议配置(本人在koyeb部署配置，仅供参考,512m以上内存)
 
