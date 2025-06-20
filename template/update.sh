@@ -66,7 +66,7 @@ touch $(awk -F '=' '/NO_ACTION_FLAG/{print $2; exit}' $WORK_DIR/restore.sh)1
 # 检查更新面板主程序 app
 cd $WORK_DIR
 DASHBOARD_NOW=v$(./app -v)
-DASHBOARD_LATEST=$(wget -qO- "https://api.github.com/repos/wwqgtxx/nezha/releases/latest" | awk -F '"' '/"tag_name"/{print $4}')
+DASHBOARD_LATEST=$(wget -qO- "https://api.github.com/repos/naiba/nezha/releases/latest" | awk -F '"' '/"tag_name"/{print $4}')
 [[ "$DASHBOARD_LATEST" =~ ^v([0-9]{1,3}\.){2}[0-9]{1,3}$ && "$DASHBOARD_NOW" != "$DASHBOARD_LATEST" ]] && DASHBOARD_UPDATE=true
 
 # 检测是否有设置备份数据
