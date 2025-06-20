@@ -444,8 +444,8 @@ EOF
 
   # 生成 update.sh 文件的步骤2 - 在线获取 template/bakcup.sh 模板生成完整 backup.sh 文件
   wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/update.sh | sed '1,/^########/d' >> $WORK_DIR/update.sh
-  
-  if [[ -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_REPO" && -n "$GH_PAT" ]]; then
+# 生成 restore.sh  
+if [[ -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_REPO" && -n "$GH_PAT" ]]; then
     # 生成 restore.sh 文件的步骤1 - 设置环境变量
     cat > $WORK_DIR/restore.sh << EOF
 #!/usr/bin/env bash
@@ -468,8 +468,33 @@ EOF
     # 生成 restore.sh 文件的步骤2 - 在线获取 template/restore.sh 模板生成完整 restore.sh 文件
     wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/restore.sh | sed '1,/^########/d' >> $WORK_DIR/restore.sh
   fi
+# 生成 restore2.sh
+if [[ -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_REPO" && -n "$GH_PAT" ]]; then
+    # 生成 restore.sh 文件的步骤1 - 设置环境变量
+    cat > $WORK_DIR/restore2.sh << EOF
+#!/usr/bin/env bash
 
-  # 生成 renew.sh 文件的步骤1 - 设置环境变量
+# restore2.sh 传参 a 自动还原 README.md 记录的文件，当本地与远程记录文件一样时不还原； 传参 f 不管本地记录文件，强制还原成备份库里 README.md 记录的文件； 传参 dashboard-***.tar.gz 还原成备份库里的该文件；不带参数则要求选择备份库里的文件名
+GH_PROXY=$GH_PROXY
+IS_UPDATE=$IS_UPDATE
+LOCAL_TOKEN=$LOCAL_TOKEN
+GH_PAT=$GH_PAT
+GH_BACKUP_USER=$GH_BACKUP_USER
+GH_REPO=$GH_REPO
+WORK_DIR=$WORK_DIR
+TEMP_DIR=/tmp/restore_temp
+NO_ACTION_FLAG=/tmp/flag
+IS_DOCKER=1
+DASH_VER=$DASH_VER
+########
+EOF
+
+    # 生成 restore2.sh 文件的步骤2 - 在线获取 template/2restore.sh 模板生成完整 restore2.sh 文件
+    wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/restore.sh | sed '1,/^########/d' >> $WORK_DIR/restore2.sh
+# 恢复备份文件
+$WORK_DIR/restore2.sh
+fi
+# 生成 renew.sh 文件的步骤1 - 设置环境变量
   cat > $WORK_DIR/renew.sh << EOF
 #!/usr/bin/env bash
 LOCAL_TOKEN=$LOCAL_TOKEN
@@ -481,7 +506,8 @@ DASH_VER=$DASH_VER
 ########
 EOF
 
-  # 生成 renew.sh 文件的步骤2 - 在线获取 template/renew.sh 模板生成完整 renew.sh 文件
+
+# 生成 renew.sh 文件的步骤2 - 在线获取 template/renew.sh 模板生成完整 renew.sh 文件
   wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/renew.sh | sed '1,/^########/d' >> $WORK_DIR/renew.sh
 
   # 生成定时任务: 1.每天北京时间 3:30:00 更新备份和还原文件，2.每天北京时间 4:00:00 备份一次，并重启 cron 服务； 3.每分钟自动检测在线备份文件里的内容
