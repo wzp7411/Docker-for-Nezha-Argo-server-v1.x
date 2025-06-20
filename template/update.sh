@@ -64,14 +64,10 @@ touch $(awk -F '=' '/NO_ACTION_FLAG/{print $2; exit}' $WORK_DIR/restore.sh)1
 
 
 # 检查更新面板主程序 app
-if [[ -z "$DASHBOARD_VERSION" || "$DASHBOARD_VERSION" =~ 0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
-  cd $WORK_DIR
-  DASHBOARD_NOW=$(./app -v)
-  [ -z "$DASHBOARD_VERSION" ] && DASHBOARD_LATEST=$(sed 's/v//; s/^/v&/' <<< "$DASHBOARD_VERSION")
-  [ "v${DASHBOARD_NOW}" != "$DASHBOARD_LATEST" ] && DASHBOARD_UPDATE=true
-else
-  error "The DASHBOARD_VERSION variable should be in a format like v0.00.00, please check."
-fi
+cd $WORK_DIR
+DASHBOARD_NOW=v$(./app -v)
+DASHBOARD_LATEST=$(wget -qO- "https://api.github.com/repos/wwqgtxx/nezha/releases/latest" | awk -F '"' '/"tag_name"/{print $4}')
+[[ "$DASHBOARD_LATEST" =~ ^v([0-9]{1,3}\.){2}[0-9]{1,3}$ && "$DASHBOARD_NOW" != "$DASHBOARD_LATEST" ]] && DASHBOARD_UPDATE=true
 
 # 检测是否有设置备份数据
 if [[ -n "$GH_REPO" && -n "$GH_BACKUP_USER" && -n "$GH_EMAIL" && -n "$GH_PAT" ]]; then
@@ -88,7 +84,7 @@ fi
 # 分步骤处理
 
   # 更新面板和 resource
-  if [[ "${DASHBOARD_UPDATE}${FORCE_UPDATE}" =~ 'true' && "${IS_UPDATE}" == 'yes' ]]; then
+  if [[ "${DASHBOARD_UPDATE}${FORCE_UPDATE}" =~ 'true' && "${IS_UPDATE}" == 'true' ]]; then
     hint "\n Renew dashboard app to $DASHBOARD_LATEST \n"
     wget -O /tmp/dashboard.zip ${GH_PROXY}https://github.com/naiba/nezha/releases/download/$DASHBOARD_LATEST/dashboard-linux-$ARCH.zip
     unzip /tmp/dashboard.zip -d /tmp
