@@ -46,11 +46,11 @@ https://github.com/dsadsadsss/java-wanju.git
 | `GH_CLIENTSECRET` | GitHub OAuth 客户端密钥 | 绑定GitHub需要，使用密码则填 | 否 | `ghs_xxxxxxxxxxxxxxxxxxxx` |
 | `GH_CLIENTID` | GitHub OAuth 客户端 ID | 绑定GitHub需要，使用密码不用填 | 否 | `Iv1.xxxxxxxxxxxxxxxx` |
 | `GH_USER` | GitHub 用户名 | 绑定GitHub需要，使用密码不用填 | 否 | `username` |
-| `GH_PAT` | GitHub绑定app需要的密钥 | 备份需要，不用备份则不填 | 否 | `` |
-| `GH_EMAIL` |GitHub账号  | 备份需要，不用备份则不填 | 否 | `` |
-| `GH_REPO` | GitHub备份仓库 | 备份需要，不用备份则不填 | 否 | `` |
-| `DASH_TOKEN` | 客户端使用的哪吒KEY | 即客户端使用的哪吒KEY | 是| `可以使用节点的UUID值` |
-| `API_TOKEN` | 客户端节点设置名字的token | 设置与DASH_TOKEN相同的值，不设置则不支持客户端设置名字 | 否| `` |
+| `GH_PAT` | GitHub绑定app需要的密钥 | 备份需要，不用备份则不填 | 否 | 无|
+| `GH_EMAIL` |GitHub账号  | 备份需要，不用备份则不填 | 否 | 无 |
+| `GH_REPO` | GitHub备份仓库 | 备份需要，不用备份则不填 | 否 | 无 |
+| `DASH_TOKEN` | 客户端使用的哪吒KEY | 即客户端使用的哪吒KEY | 是| 可以使用节点的UUID值 |
+| `API_TOKEN` | 客户端节点设置名字的token | 设置与上面DASH_TOKEN相同的值 | 否|不设置则不支持客户端设置名字 |
 #### docker镜像(默认面板端口80):
 ```
 daxia2023/nezv1:latest
