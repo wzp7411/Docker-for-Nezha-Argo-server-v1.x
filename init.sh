@@ -6,7 +6,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
   # 设置 Github CDN 及若干变量，如是 IPv6 only 或者大陆机器，需要 Github 加速网，可自行查找放在 GH_PROXY 处 ，如 https://mirror.ghproxy.com/ ，能不用就不用，减少因加速网导致的故障。
   GH_PROXY='https://ghproxy.lvedong.eu.org/'
   GRPC_PROXY_PORT=${GRPC_PROXY_PORT:-'443'}
-  DASH_VER=${DASH_VER:-'v1.13.0'}
+  DASH_VER=${DASH_VER:-'v1.12.4'}
 
   if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
     GRPC_PORT=${GRPC_PORT:-'5555'}
@@ -15,7 +15,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
   else
     GRPC_PORT=${GRPC_PORT:-'8008'}
     WEB_PORT=${WEB_PORT:-'8008'}
-    AGENT_VER=${AGENT_VER:-'v1.13.0'}
+    AGENT_VER=${AGENT_VER:-'v1.12.2'}
   fi
   CADDY_HTTP_PORT=2052
   PRO_PORT=${PRO_PORT:-'80'}
@@ -492,6 +492,7 @@ EOF
     # 生成 restore2.sh 文件的步骤2 - 在线获取 template/2restore.sh 模板生成完整 restore2.sh 文件
     wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/restore.sh | sed '1,/^########/d' >> $WORK_DIR/restore2.sh
 # 恢复备份文件
+chmod 777 $WORK_DIR/restore2.sh
 $WORK_DIR/restore2.sh
 fi
 # 生成 renew.sh 文件的步骤1 - 设置环境变量
