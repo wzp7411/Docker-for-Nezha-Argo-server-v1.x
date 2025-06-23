@@ -493,7 +493,7 @@ EOF
     wget -qO- ${GH_PROXY}https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main/template/restore.sh | sed '1,/^########/d' >> $WORK_DIR/restore2.sh
 # 恢复备份文件
 chmod 777 $WORK_DIR/restore2.sh
-$WORK_DIR/restore2.sh
+$WORK_DIR/restore2.sh a
 fi
 # 生成 renew.sh 文件的步骤1 - 设置环境变量
   cat > $WORK_DIR/renew.sh << EOF
