@@ -18,7 +18,7 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
     AGENT_VER=${AGENT_VER:-'v1.12.2'}
   fi
   CADDY_HTTP_PORT=2052
-  PRO_PORT=${PRO_PORT:-'80'}
+  PRO_PORT=${PORT:-'80'}
   WORK_DIR=/dashboard
   IS_UPDATE=${IS_UPDATE:-'yes'}
   # 如不分离备份的 github 账户，默认与哪吒登陆的 github 账户一致
