@@ -18,7 +18,14 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
     AGENT_VER=${AGENT_VER:-'v1.12.2'}
   fi
   CADDY_HTTP_PORT=2052
+  echo "================================================"
+  echo "Application start. Dumping environment variables..."
+  echo "CF assigned PORT is: [$PORT]"
+  echo "Before our logic, PRO_PORT is undefined: [$PRO_PORT]"
   PRO_PORT=${PORT:-'80'}
+  echo "After our logic, PRO_PORT is now: [$PRO_PORT]"
+  echo "================================================"
+  echo ""
   WORK_DIR=/dashboard
   IS_UPDATE=${IS_UPDATE:-'yes'}
   # 如不分离备份的 github 账户，默认与哪吒登陆的 github 账户一致
