@@ -182,7 +182,13 @@ else
 fi
 
 if [ "$IS_DOCKER" = 1 ]; then
-  [ $(supervisorctl status all | grep -c "RUNNING") = $(grep -c '\[program:.*\]' /etc/supervisor/conf.d/damon.conf) ] && info "\n All programs started! \n" || error "\n Failed to start program! \n"
+  # 添加变量检查日志
+  echo "DEBUG: Checking supervisor status..." >> /tmp/restore_debug.log
+  echo "DEBUG: RUNNING count: $(supervisorctl status all | grep -c "RUNNING")" >> /tmp/restore_debug.log
+  echo "DEBUG: Program count: $(grep -c '\[program:.*\]' /etc/supervisor/conf.d/damon.conf)" >> /tmp/restore_debug.log
+  
+  # 修复条件判断，确保变量被引号包围
+  [ "$(supervisorctl status all | grep -c "RUNNING")" = "$(grep -c '\[program:.*\]' /etc/supervisor/conf.d/damon.conf)" ] && info "\n All programs started! \n" || error "\n Failed to start program! \n"
 else
   [ "$(systemctl is-active nezha-dashboard)" = 'active' ] && info "\n Nezha dashboard started! \n" || error "\n Failed to start Nezha dashboard! \n"
 fi

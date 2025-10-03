@@ -19,13 +19,22 @@ else
     WEB_PORT=${WEB_PORT:-'8008'}
     AGENT_VER=${AGENT_VER:-'v1.12.2'}
 fi
+
+remove_v_prefix() {
+    local version=$1
+    if [[ $version =~ ^v ]]; then
+        version="${version#v}"
+    fi
+    echo "$version"
+}
+
 CADDY_VER=${CADDY_VER:-'2.9.1'}
 CADDY_VER=$(remove_v_prefix "$CADDY_VER")
 
 ## 目录路径配置
 WORK_DIR=/dashboard
 
-REPO_BASE="https://raw.githubusercontent.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/main"
+REPO_BASE="https://github.com/wzp7411/Docker-for-Nezha-Argo-server-v1.x/raw/main"
 
 ## GitHub 仓库地址
 # Dashboard 仓库: nezhahq/dashboard
@@ -159,14 +168,6 @@ add_v_prefix() {
     echo "$version"
 }
 
-remove_v_prefix() {
-    local version=$1
-    if [[ $version =~ ^v ]]; then
-        version="${version#v}"
-    fi
-    echo "$version"
-}
-
 get_country_code() {
     country_code="UN"
     urls=("http://ipinfo.io/country" "https://ifconfig.co/country" "https://ipapi.co/country")
@@ -295,22 +296,44 @@ detect_architecture() {
 download_dependencies() {
     DASH_VER=$(add_v_prefix "$DASH_VER")
     info "最终确定的面板版本: DASH_VER = $DASH_VER"
+    echo "DEBUG: Initial DASH_VER = $DASH_VER" >> /tmp/debug.log
 
     # 下载 Caddy
+    echo "DEBUG: Downloading Caddy version v${CADDY_VER} for ${ARCH}" >> /tmp/debug.log
     download_file "https://github.com/caddyserver/caddy/releases/download/v${CADDY_VER}/caddy_${CADDY_VER}_linux_${ARCH}.tar.gz" "-" "true" | tar xz -C $WORK_DIR caddy
+    if [ $? -eq 0 ] && [ -f "$WORK_DIR/caddy" ]; then
+        echo "DEBUG: Caddy downloaded successfully" >> /tmp/debug.log
+    else
+        echo "DEBUG: Caddy download failed" >> /tmp/debug.log
+    fi
 
     # 下载 Dashboard
     if [ "$IS_UPDATE" = 'no' ]; then
+        echo "DEBUG: Using specified version: ${DASH_VER}" >> /tmp/debug.log
         download_file "https://github.com/nezhahq/nezha/releases/download/${DASH_VER}/dashboard-linux-$ARCH.zip" "/tmp/dashboard.zip"
     else
         DASHBOARD_LATEST=$(download_file "https://api.github.com/repos/naiba/nezha/releases/latest" "-" "true" | awk -F '"' '/"tag_name"/{print $4}')
+        echo "DEBUG: Latest version from API: $DASHBOARD_LATEST" >> /tmp/debug.log
         download_file "https://github.com/nezhahq/nezha/releases/download/$DASHBOARD_LATEST/dashboard-linux-$ARCH.zip" "/tmp/dashboard.zip"
+        DASH_VER=$DASHBOARD_LATEST
+        echo "DEBUG: Updated DASH_VER to latest: $DASH_VER" >> /tmp/debug.log
     fi
+    
+    echo "DEBUG: Unzipping dashboard" >> /tmp/debug.log
     unzip /tmp/dashboard.zip -d /tmp
     if [ -s "/tmp/dist/dashboard-linux-${ARCH}" ]; then
         mv -f /tmp/dist/dashboard-linux-$ARCH $WORK_DIR/app
+        echo "DEBUG: Dashboard app moved from /tmp/dist/" >> /tmp/debug.log
     else
        mv -f /tmp/dashboard-linux-$ARCH $WORK_DIR/app
+       echo "DEBUG: Dashboard app moved from /tmp/" >> /tmp/debug.log
+    fi
+    
+    if [ -f "$WORK_DIR/app" ]; then
+        echo "DEBUG: Dashboard app exists at $WORK_DIR/app" >> /tmp/debug.log
+        chmod +x $WORK_DIR/app
+    else
+        echo "DEBUG: ERROR: Dashboard app not found after extraction" >> /tmp/debug.log
     fi
 
     # 下载 Cloudflared
@@ -327,7 +350,20 @@ download_dependencies() {
     unzip $WORK_DIR/nezha-agent.zip -d $WORK_DIR/
     rm -rf $WORK_DIR/nezha-agent.zip /tmp/dist /tmp/dashboard.zip
 
-    [ -n "$API_TOKEN" ] && [[ "$ARCH" == "amd64" ]] && download_file "https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/releases/download/nezfuz/nezfz-linux-amd64" "$WORK_DIR/nezfz" || [[ "$ARCH" != "amd64" ]] && hint "跳过 nezfz（仅支持 amd64）"
+    # 下载 nezfz（仅在满足条件时）
+    if [ -n "$API_TOKEN" ] && [[ "$ARCH" == "amd64" ]]; then
+        echo "DEBUG: Downloading nezfz for amd64" >> /tmp/debug.log
+        download_file "https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/releases/download/nezfuz/nezfz-linux-amd64" "$WORK_DIR/nezfz"
+        if [ -f "$WORK_DIR/nezfz" ]; then
+            chmod +x $WORK_DIR/nezfz
+            echo "DEBUG: nezfz downloaded and made executable" >> /tmp/debug.log
+        else
+            echo "DEBUG: nezfz download failed" >> /tmp/debug.log
+        fi
+    else
+        [[ "$ARCH" != "amd64" ]] && hint "跳过 nezfz（仅支持 amd64）"
+        echo "DEBUG: Skipping nezfz (API_TOKEN not set or not amd64)" >> /tmp/debug.log
+    fi
 
     # 启动xxxry
     # 只有当 UUID 被设置且不为 "0"，并且架构为 amd64 时，才下载 webapp
@@ -561,7 +597,33 @@ DASH_VER=$DASH_VER
 ########
 EOF
 
-    download_file "$REPO_BASE/template/restore.sh" "-" "true" | sed '1,/^########/d' >> $WORK_DIR/restore2.sh
+    # 下载模板并添加辅助函数
+    download_file "$REPO_BASE/template/restore.sh" "-" "true" | sed '1,/^########/d' > $WORK_DIR/restore2.sh.tmp
+    
+    # 添加辅助函数到 restore2.sh
+    cat >> $WORK_DIR/restore2.sh.tmp << 'EOF'
+
+# 辅助函数 - 移除版本号前缀
+remove_v_prefix() {
+    local version=$1
+    if [[ $version =~ ^v ]]; then
+        version="${version#v}"
+    fi
+    echo "$version"
+}
+
+# 辅助函数 - 添加版本号前缀
+add_v_prefix() {
+    local version=$1
+    if [[ ! $version =~ ^v ]]; then
+        version="v$version"
+    fi
+    echo "$version"
+}
+EOF
+
+    # 移动临时文件到最终位置
+    mv $WORK_DIR/restore2.sh.tmp $WORK_DIR/restore2.sh
 
     # 恢复备份文件
     chmod 777 $WORK_DIR/restore2.sh
@@ -784,6 +846,7 @@ setup_services_and_cron() {
   service cron restart
 
   # 生成 supervisor 进程守护配置文件
+  echo "DEBUG: Generating damon.conf with basic services" >> /tmp/debug.log
   cat > /etc/supervisor/conf.d/damon.conf << EOF
 [supervisord]
 nodaemon=true
@@ -818,7 +881,11 @@ autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 EOF
+  echo "DEBUG: Basic damon.conf generated" >> /tmp/debug.log
+  
+  # 添加可选服务（nezfz 和 webapp）到 damon.conf
   if [ -n "$API_TOKEN" ] && [ "$API_TOKEN" != "0" ]; then
+    echo "DEBUG: Adding nezfz to damon.conf" >> /tmp/debug.log
     cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
 [program:nezfz]
@@ -828,8 +895,12 @@ autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 EOF
+  else
+    echo "DEBUG: Skipping nezfz (API_TOKEN not set or is 0)" >> /tmp/debug.log
   fi
+  
   if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
+    echo "DEBUG: Adding webapp to damon.conf" >> /tmp/debug.log
     cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
 [program:webapp]
@@ -839,7 +910,12 @@ autorestart=true
 stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 EOF
+  else
+    echo "DEBUG: Skipping webapp (UUID not set or is 0)" >> /tmp/debug.log
   fi
+  
+  echo "DEBUG: Final damon.conf content:" >> /tmp/debug.log
+  cat /etc/supervisor/conf.d/damon.conf >> /tmp/debug.log
 }
 
 # 主函数
