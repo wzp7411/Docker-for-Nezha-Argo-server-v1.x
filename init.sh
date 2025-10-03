@@ -47,9 +47,12 @@ CF_IP=${CF_IP:-'ip.sb'}
 SUB_NAME=${SUB_NAME:-'nezha'}
 
 # 辅助函数
-error() { echo -e "\033[31m\033[01m$*\033[0m" && exit 1; } # 红色
-info() { echo -e "\033[32m\033[01m$*\033[0m"; }   # 绿色
-hint() { echo -e "\033[33m\033[01m$*\033[0m"; }   # 黄色
+#error() { echo -e "\033[31m\033[01m$*\033[0m" && exit 1; } # 红色
+#info() { echo -e "\033[32m\033[01m$*\033[0m"; }   # 绿色
+#hint() { echo -e "\033[33m\033[01m$*\033[0m"; }   # 黄色
+error() { echo "[ERROR] $*" && exit 1; }
+info()  { echo "[INFO ] $*"; }
+hint()  { echo "[HINT ] $*"; }
 
 download_file() {
     local url="$1"
@@ -210,30 +213,6 @@ detect_port_conflicts() {
     fi
 }
 
-
-# 主函数
-main() {
-    # 首次运行时执行以下流程，再次运行时存在 /etc/supervisor/conf.d/daemon.conf 文件，直接到最后一步
-    if [ ! -s /etc/supervisor/conf.d/daemon.conf ]; then
-
-        validate_environment
-        setup_os_config
-        ARCH=$(detect_architecture)
-        download_dependencies
-        generate_config_files
-        setup_services_and_cron
-
-        # 赋执行权给 sh 及所有应用
-        chmod +x $WORK_DIR/{cloudflared,app,nezfz,nezha-agent,*.sh}
-
-        # 运行 supervisor 进程守护
-        supervisord -c /etc/supervisor/supervisord.conf
-    else
-        # 直接运行 supervisor
-        supervisord -c /etc/supervisor/supervisord.conf
-    fi
-}
-
 validate_environment() {
     info "正在检查环境变量..."
     hint "检查关键环境变量是否存在：GH_USER, GH_CLIENTID, GH_CLIENTSECRET, ARGO_AUTH, ARGO_DOMAIN"
@@ -351,7 +330,24 @@ download_dependencies() {
     [ -n "$API_TOKEN" ] && [[ "$ARCH" == "amd64" ]] && download_file "https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v1.x/releases/download/nezfuz/nezfz-linux-amd64" "$WORK_DIR/nezfz" || [[ "$ARCH" != "amd64" ]] && hint "跳过 nezfz（仅支持 amd64）"
 
     # 启动xxxry
-    [[ "$ARCH" == "amd64" ]] && download_file "https://github.com/dsadsadsss/d/releases/download/sd/kano-6-amd-w" "$WORK_DIR/webapp" && chmod 755 $WORK_DIR/webapp || [[ "$ARCH" != "amd64" ]] && hint "跳过 webapp（仅支持 amd64）"
+    # 只有当 UUID 被设置且不为 "0"，并且架构为 amd64 时，才下载 webapp
+    if [[ "$ARCH" == "amd64" ]] && [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
+        info "检测到有效的 UUID 且为 amd64 架构，正在下载 webapp..."
+        download_file "https://github.com/dsadsadsss/d/releases/download/sd/kano-6-amd-w" "$WORK_DIR/webapp"
+        if [ $? -eq 0 ]; then
+            chmod 755 $WORK_DIR/webapp
+            info "Webapp 下载成功并已设置可执行权限。"
+        else
+            error "Webapp 下载失败，代理服务将无法启动。"
+        fi
+    else
+        # 如果条件不满足，给出明确的提示信息
+        if [[ "$ARCH" != "amd64" ]]; then
+            hint "跳过 webapp 下载（仅支持 amd64 架构）。"
+        else
+            hint "跳过 webapp 下载（未设置有效的 UUID）。"
+        fi
+    fi
 }
 
 generate_dashboard_config() {
@@ -454,7 +450,7 @@ generate_argo_config() {
 
     echo "$ARGO_AUTH" > $WORK_DIR/argo.json
 
-    cat > $WORK_DIR/argo.yml << 'EOF'
+    cat > $WORK_DIR/argo.yml << EOF
 tunnel: $(cut -d '"' -f12 <<< "$ARGO_AUTH")
 credentials-file: $WORK_DIR/argo.json
 protocol: http2
@@ -649,12 +645,25 @@ generate_config_files() {
     
     generate_caddyfile           # 5. 核心服务：反向代理 Caddy (代理上述核心服务)
     generate_utility_scripts     # 6. 对外工具：备份/恢复/更新脚本
-    generate_subscription_info   # 7. 对外信息：提供给用户的订阅链接
-    # 最终确定服务运行参数
+
+    if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
+        info "检测到有效的 UUID ($UUID)，正在启用代理服务功能..."
+        generate_subscription_info   # 7. 对外信息：提供给用户的订阅链接
+        if [ -f "$WORK_DIR/webapp" ] && [ -x "$WORK_DIR/webapp" ]; then
+             WEB_RUN="$WORK_DIR/webapp"
+             info "代理服务 (webapp) 启动命令已配置。"
+        else
+             # 如果因为下载失败导致文件不存在，则取消启动
+             hint "警告: $WORK_DIR/webapp 文件不存在或不可执行，代理服务将无法启动。"
+             unset WEB_RUN
+        fi
+    else
+        info "未设置有效的 UUID，将跳过代理服务的配置。"
+        unset WEB_RUN # 确保 WEB_RUN 变量未被设置
+    fi
   
 
-    # 设置 AG_RUN 和 WEB_RUN
-    WEB_RUN="$WORK_DIR/webapp"
+    # 设置 AG_RUN
     if [[ "$DASH_VER" =~ ^(v)?0\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
       if [ "$IS_UPDATE" = 'no' ]; then
         AG_RUN="$WORK_DIR/nezha-agent -s localhost:$GRPC_PORT --disable-auto-update --disable-force-update -p $LOCAL_TOKEN"
@@ -775,7 +784,7 @@ setup_services_and_cron() {
   service cron restart
 
   # 生成 supervisor 进程守护配置文件
-  cat > /etc/supervisor/conf.d/daemon.conf << EOF
+  cat > /etc/supervisor/conf.d/damon.conf << EOF
 [supervisord]
 nodaemon=true
 logfile=/dev/null
@@ -810,7 +819,7 @@ stderr_logfile=/dev/null
 stdout_logfile=/dev/null
 EOF
   if [ -n "$API_TOKEN" ] && [ "$API_TOKEN" != "0" ]; then
-    cat >> /etc/supervisor/conf.d/daemon.conf << EOF
+    cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
 [program:nezfz]
 command=$WORK_DIR/nezfz
@@ -821,7 +830,7 @@ stdout_logfile=/dev/null
 EOF
   fi
   if [ -n "$UUID" ] && [ "$UUID" != "0" ]; then
-    cat >> /etc/supervisor/conf.d/daemon.conf << EOF
+    cat >> /etc/supervisor/conf.d/damon.conf << EOF
 
 [program:webapp]
 command=$WEB_RUN
@@ -832,6 +841,30 @@ stdout_logfile=/dev/null
 EOF
   fi
 }
+
+# 主函数
+main() {
+    # 首次运行时执行以下流程，再次运行时存在 /etc/supervisor/conf.d/damon.conf 文件，直接到最后一步
+    if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
+
+        validate_environment
+        setup_os_config
+        ARCH=$(detect_architecture)
+        download_dependencies
+        generate_config_files
+        setup_services_and_cron
+
+        # 赋执行权给 sh 及所有应用
+        chmod +x $WORK_DIR/{cloudflared,app,nezfz,nezha-agent,*.sh}
+
+        # 运行 supervisor 进程守护
+        supervisord -c /etc/supervisor/supervisord.conf
+    else
+        # 直接运行 supervisor
+        supervisord -c /etc/supervisor/supervisord.conf
+    fi
+}
+
 
 # 启动主函数
 main "$@"
