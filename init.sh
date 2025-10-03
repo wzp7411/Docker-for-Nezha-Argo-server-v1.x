@@ -301,10 +301,10 @@ download_dependencies() {
 
     # 下载 Dashboard
     if [ "$IS_UPDATE" = 'no' ]; then
-        download_file "https://github.com/nezhahq/dashboard/releases/download/${DASH_VER}/dashboard-linux-$ARCH.zip" "/tmp/dashboard.zip"
+        download_file "https://github.com/nezhahq/nezha/releases/download/${DASH_VER}/dashboard-linux-$ARCH.zip" "/tmp/dashboard.zip"
     else
-        DASHBOARD_LATEST=$(download_file "https://api.github.com/repos/nezhahq/dashboard/releases/latest" "-" "true" | awk -F '"' '/"tag_name"/{print $4}')
-        download_file "https://github.com/nezhahq/dashboard/releases/download/$DASHBOARD_LATEST/dashboard-linux-$ARCH.zip" "/tmp/dashboard.zip"
+        DASHBOARD_LATEST=$(download_file "https://api.github.com/repos/naiba/nezha/releases/latest" "-" "true" | awk -F '"' '/"tag_name"/{print $4}')
+        download_file "https://github.com/nezhahq/nezha/releases/download/$DASHBOARD_LATEST/dashboard-linux-$ARCH.zip" "/tmp/dashboard.zip"
     fi
     unzip /tmp/dashboard.zip -d /tmp
     if [ -s "/tmp/dist/dashboard-linux-${ARCH}" ]; then
